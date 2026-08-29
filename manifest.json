@@ -1,0 +1,9 @@
+{
+	"id": "my-images",
+	"name": "My Images",
+	"version": "1.0.0",
+	"minAppVersion": "1.5.0",
+	"description": "Keeps the notes of the image folders in shape — naming their images after them, dating them after the tweet they link to.",
+	"author": "Vlad Kostyanetsky",
+	"isDesktopOnly": false
+}

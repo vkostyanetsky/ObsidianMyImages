@@ -1,0 +1,23 @@
+/*
+ * The rows of the image folder list carry no name of their own, so the column
+ * that would hold one is taken out and the folder input is given the width of
+ * the row, with the button that removes the folder next to it.
+ */
+
+.my-images-folder-row .setting-item-info,
+.my-images-folder-add .setting-item-info {
+	display: none;
+}
+
+.my-images-folder-row .setting-item-control,
+.my-images-folder-add .setting-item-control {
+	flex-grow: 1;
+	justify-content: flex-start;
+	width: 100%;
+}
+
+.my-images-folder-row .search-input-container,
+.my-images-folder-row .search-input-container input {
+	flex-grow: 1;
+	width: 100%;
+}
