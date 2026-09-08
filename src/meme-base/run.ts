@@ -90,7 +90,10 @@ export async function rebuildMemeBase(
 		return { kind: "unreadable", path, problem: problemOf(error) };
 	}
 
-	const { groups, notes } = groupMemeTags(tag, tagsOfNotes(app));
+	const { groups, notes } = groupMemeTags(
+		{ tag, all: settings.allView, byTopic: settings.topicView },
+		tagsOfNotes(app),
+	);
 
 	log(`"${tag}" is carried by ${notes} notes of the vault, making up ${groups.length} groups`);
 
@@ -98,7 +101,11 @@ export async function rebuildMemeBase(
 		return { kind: "no-notes", path, tag };
 	}
 
-	const rebuilt = rebuildMemeBaseViews(base, tag, groups);
+	if (groups.length === 0) {
+		return { kind: "no-groups", path, tag };
+	}
+
+	const rebuilt = rebuildMemeBaseViews(base, groups);
 
 	if (rebuilt.kind === "no-views") {
 		logProblem(`"${path}" has no view the generated ones could be cut from`);
@@ -120,7 +127,7 @@ export async function rebuildMemeBase(
 
 	await app.vault.modify(file, written);
 
-	log(`"${path}" written: ${rebuilt.views} views after the first one`);
+	log(`"${path}" written: ${rebuilt.views} views`);
 
 	return { kind: "written", path, views: rebuilt.views, notes };
 }

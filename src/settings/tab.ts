@@ -34,11 +34,10 @@ export class MyImagesSettingTab extends PluginSettingTab {
 		new Setting(this.containerEl)
 			.setName("Base of the memes")
 			.setDesc(
-				"Writes the views of a base file anew: one view per tag below the tag of " +
-					"the memes, plus one for the memes that carry nothing below it. The " +
-					"header of the file and its first view are left as they are — that " +
-					"first view is the one every generated view is cut from — and every " +
-					"view after it is replaced. Run the command to write them.",
+				"Writes the views of a base file anew: one per tag below the tag of the " +
+					"memes, by name, and the two named below ahead of them. The header " +
+					"of the file is left as it is, and the view it opened with is the " +
+					"model every written view is cut from. Run the command to write them.",
 			)
 			.setHeading();
 
@@ -89,6 +88,50 @@ export class MyImagesSettingTab extends PluginSettingTab {
 					void save(tag);
 				});
 			});
+
+		this.displayViewName(
+			"View of every meme",
+			"Stands first in the base, and the base opens on it. It gathers every note " +
+				"carrying the tag of the memes, the tags below it counting as well. " +
+				"Blank leaves that view out.",
+			() => this.plugin.settings.memeBase.allView,
+			(value) => {
+				this.plugin.settings.memeBase.allView = value;
+			},
+		);
+
+		this.displayViewName(
+			"View of the memes without a tag of their own",
+			"Stands right after it, ahead of the tags. It gathers the memes that carry " +
+				"the tag of the memes and nothing below it, and sorts them by their " +
+				"tags — those of other trees being all such a meme carries. Blank " +
+				"leaves that view out.",
+			() => this.plugin.settings.memeBase.topicView,
+			(value) => {
+				this.plugin.settings.memeBase.topicView = value;
+			},
+		);
+	}
+
+	/** The name one view of the base carries, which is blank to leave it out. */
+	private displayViewName(
+		name: string,
+		description: string,
+		read: () => string,
+		write: (value: string) => void,
+	): void {
+		new Setting(this.containerEl)
+			.setName(name)
+			.setDesc(description)
+			.addText((text) =>
+				text
+					.setPlaceholder("Not written")
+					.setValue(read())
+					.onChange(async (value) => {
+						write(value);
+						await this.plugin.saveSettings();
+					}),
+			);
 	}
 
 	/** What every rule shares: which notes it works on, and when. */

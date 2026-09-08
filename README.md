@@ -121,27 +121,41 @@ My memes are tagged, one tag per thing a meme is good for — `Memes/Funny`, `Me
 **Rebuild the views of the base of the memes** does it instead. Every note of the vault carrying the tag of the memes is counted, and the base comes out with one view per tag below it:
 
 ```yaml
+views:
+  - type: cards
+    name: Everything          # the name given in the settings
+    filters:
+      and:
+        - 'file.hasTag("Memes")'
+    # …the look of the view the file opened with
+  - type: cards
+    name: Without a tag       # the other name given there
+    filters:
+      and:
+        - 'file.hasTag("Memes")'
+        - not:
+            - 'file.hasTag("Memes/Funny", "Memes/Work", …)'
+    sort:
+      - property: tags
+        direction: ASC
+      # …and whatever the model sorts by, after that
   - type: cards
     name: Funny
     filters:
       and:
         - 'file.hasTag("Memes/Funny")'
-    order:
-      - file.name
-    sort:
-      - property: timestamp
-        direction: DESC
-    image: formula.preview
-    imageAspectRatio: 1
-    cardSize: 350
+    # …and the same look again
 ```
 
 - **The header of the file is yours.** Its filters, its formulas and its properties are read and written back untouched — the folder the memes live in is filtered there, not in the views.
-- **The first view is yours as well, and it is the model the rest are cut from.** Whatever it says about the type of the view, the image it shows, the size of its cards and the order it sorts in is said by every generated view too; the only thing they add is a filter of their own. Everything after that first view is replaced on every run.
+- **The first view of the file is the model every generated view is cut from.** Whatever it says about the type of the view, the image it shows, the size of its cards and the order it sorts in is said by every view of the rebuilt file too. Its name and its filter are not kept: those are the plugin's to write, and the row of views is replaced whole on every run — the first one included.
+- **The two views that are not one tag of the memes are named in the settings, and an unnamed one is not written at all.** They are the view of every meme there is and the view of the memes that carry no tag of their own; both stand ahead of the tags, in that order.
+- **The view of every meme** gathers the lot: `hasTag` counts the tags below the one it is given, so a single `file.hasTag("Memes")` does it. It stands first, so the base opens on the whole wall of them — the notes of the folder carrying no such tag at all stay out of it.
 - **A view is named after its tag**, the tag of the memes taken off the front: `Memes/Funny` becomes **Funny**, and a deeper `Memes/Funny/Cats` becomes **Funny/Cats**.
-- **The largest group comes first**, ties settled by name, so the tags worth browsing are the ones nearest to hand.
+- **A tag of two words run together is spelled out the way it is read**: `Memes/SoPleased` becomes **So pleased**. An abbreviation is left alone — `Memes/NSFW` stays **NSFW**, `Memes/3D` stays **3D** — and the tag the view filters by is the tag as written, whatever its view is called.
+- **The view of the memes without a tag of their own** asks for the tag of the memes and then turns down every tag below it in one call, so what is left is the pile nothing has been said about yet. Since the tags of other trees are all such a meme carries, that view sorts by tags before it sorts the way the model does. It is left out when there are no such memes, named or not.
+- **The views after those two are ordered by name**, from А to Я in Russian order whatever language Obsidian runs in, so that a row of three dozen views is a row one can find a name in.
 - **A meme of several tags shows up under each of them.** The views are a way of browsing the memes, not a filing system: a meme about work one is also angry about is worth finding under both.
-- **The memes that carry the tag and nothing below it get a view of their own**, named after the tag itself and kept last. `hasTag` counts the tags below the one it is given, so that view filters them out by hand — it is the pile nobody has said anything about yet.
 - **The whole vault is counted, not one folder.** What is then shown is up to the filters of the base: a base that only looks at one folder shows the memes of that folder, whatever the tags of the rest of the vault say.
 - **Nothing is written unless the file would come out saying something else**, so a run that finds the views in order leaves the modification date of the base alone.
 - The file is read as YAML and written back as YAML, which normalizes the way it is laid out — the values are the ones you gave, the quoting and the line breaks are Obsidian's own.
@@ -163,6 +177,8 @@ Everything the plugin does to the vault is written to the developer console (`Ct
 | **Date** | The property that day is written to. Blank falls back to `date`. |
 | **Base file** | The `.base` file whose views are written anew. Nothing is written until one is named. |
 | **Tag of the memes** | The tag the memes sit under, written without a leading `#`. The tags below it are what the views are made of. |
+| **View of every meme** | The name of the view that gathers every meme there is and stands first in the base. Blank leaves it out. |
+| **View of the memes without a tag of their own** | The name of the view that gathers the memes carrying nothing below the tag of the memes. Blank leaves it out. |
 
 Folders are matched without regard to case, and a folder holds everything below it, so `Projects` covers `Projects/2026/Trip.md` as well.
 

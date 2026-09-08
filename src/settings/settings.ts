@@ -39,6 +39,14 @@ export interface MemeBaseSettings {
 	file: string;
 	/** The top-level tag of the memes, such as `Memes`. */
 	tag: string;
+	/**
+	 * The name of the view of every meme there is. Blank leaves that view out
+	 * of the base: the two views that are not one tag of the memes are the only
+	 * ones without a name of their own, and an unnamed one is not written.
+	 */
+	allView: string;
+	/** The name of the view of the memes that carry no tag below that one. */
+	topicView: string;
 }
 
 /** Everything the plugin remembers between sessions. */
@@ -61,8 +69,9 @@ export const DEFAULT_SETTINGS: MyImagesSettings = {
 		tweetDate: { enabled: false, property: DEFAULT_TWEET_DATE_PROPERTY },
 	},
 	// Nothing is guessed at here: a base of somebody else's making would be
-	// written over, so the file and the tag are named by hand or not at all.
-	memeBase: { file: "", tag: "" },
+	// written over, so the file, the tag and the views that are not tags of the
+	// memes are all named by hand or not at all.
+	memeBase: { file: "", tag: "", allView: "", topicView: "" },
 };
 
 /**
@@ -174,6 +183,8 @@ export function readSettings(data: unknown): MyImagesSettings {
 		memeBase: {
 			file: asString(memeBase.file, DEFAULT_SETTINGS.memeBase.file),
 			tag: asString(memeBase.tag, DEFAULT_SETTINGS.memeBase.tag),
+			allView: asString(memeBase.allView, DEFAULT_SETTINGS.memeBase.allView),
+			topicView: asString(memeBase.topicView, DEFAULT_SETTINGS.memeBase.topicView),
 		},
 	};
 }
