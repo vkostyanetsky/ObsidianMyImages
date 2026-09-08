@@ -10,8 +10,10 @@ Two features, three commands, and one run the plugin can make by itself once the
 
 | Feature | Commands |
 | --- | --- |
-| [Image notes](#-image-notes) | **Update current note**, **Update notes in image folders** |
-| [Meme base](#-meme-base) | **Rebuild views of the meme base** |
+| [Image notes](#image-notes) | **Update current note**, **Update notes in image folders** |
+| [Meme base](#meme-base) | **Rebuild views of the meme base** |
+
+<a id="image-notes"></a>
 
 ## 🖼️ Image notes
 
@@ -19,8 +21,8 @@ The notes kept in the **image folders** named in the settings are brought into s
 
 | Rule | What it does |
 | --- | --- |
-| [Renaming images](#-renaming-images) | Names the images embedded in a note after the note itself |
-| [Date of a tweet](#-date-of-a-tweet) | Writes the day the tweet the note links to was posted on into the note |
+| [Renaming images](#renaming-images) | Names the images embedded in a note after the note itself |
+| [Date of a tweet](#date-of-a-tweet) | Writes the day the tweet the note links to was posted on into the note |
 
 The rules are applied in that order, one note at a time. **A note is only written when a rule would leave it saying something other than it does**, so a run over folders that are already in order writes nothing and leaves a thousand modification dates alone. A rule that goes wrong does not hold up the ones behind it — the renaming of the images and the date of a tweet have nothing to do with each other — and the notice says what was done and what was not.
 
@@ -43,6 +45,8 @@ A single notice sums the run up — how many notes were written, out of how many
 With **Update when the vault is opened** switched on, the run above happens once by itself: right after Obsidian has read the vault in, the notes of the image folders are gone through and whatever is out of place is put right. It reports only when it wrote something or ran into trouble.
 
 It is the one run nobody asks for. The plugin does not listen to the vault: a note is never looked at while it is being written, and images never move under your hands. Everything else happens when a command is run.
+
+<a id="renaming-images"></a>
 
 ## 🏷️ Renaming images
 
@@ -95,6 +99,8 @@ The renaming is planned in full before anything happens. If a name the plan need
 
 Renaming goes through the Obsidian file manager, so it honours the **Automatically update internal links** setting: when it is on, Obsidian rewrites the links itself and the plugin only checks the result; when it is off, the plugin rewrites the links of the current note in one undoable step. Links to the images from *other* notes are Obsidian's business either way.
 
+<a id="date-of-a-tweet"></a>
+
 ## 🐦 Date of a tweet
 
 A note made from something seen on X usually keeps the address it came from. The day the tweet was posted on is written in that address already — the id of a tweet carries the millisecond it was handed out at — so the plugin reads the day off the link and writes it into the note:
@@ -113,6 +119,8 @@ date: 2017-04-06
 - **A date the note already carries is written over.** The id of the tweet is what the day is taken from; a date typed by hand loses.
 - Tweets from before November 2010 carry no timestamp in their ids — those were counted up one by one — and a link to one of them is left alone.
 - The property the date goes into is named in the settings; blank falls back to `date`.
+
+<a id="meme-base"></a>
 
 ## 🗃️ Meme base
 
