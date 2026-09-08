@@ -3,7 +3,9 @@ import { PluginSettingTab, Setting } from "obsidian";
 
 import type MyImagesPlugin from "../main";
 import { DEFAULT_TWEET_DATE_PROPERTY, normalizeProperty } from "./settings";
+import { BaseSuggest } from "./base-suggest";
 import { FolderSuggest } from "./folder-suggest";
+import { TopLevelTagSuggest } from "./tag-suggest";
 
 /** What a switch of a rule says under its name. */
 const RULE_SWITCH_DESCRIPTION = "Whether this is applied to a note of the image folders at all.";
@@ -24,6 +26,69 @@ export class MyImagesSettingTab extends PluginSettingTab {
 		this.displayImageNotes();
 		this.displayRenameImages();
 		this.displayTweetDate();
+		this.displayMemeBase();
+	}
+
+	/** The base of the memes, and the tag the memes it shows sit under. */
+	private displayMemeBase(): void {
+		new Setting(this.containerEl)
+			.setName("Base of the memes")
+			.setDesc(
+				"Writes the views of a base file anew: one view per tag below the tag of " +
+					"the memes, plus one for the memes that carry nothing below it. The " +
+					"header of the file and its first view are left as they are — that " +
+					"first view is the one every generated view is cut from — and every " +
+					"view after it is replaced. Run the command to write them.",
+			)
+			.setHeading();
+
+		new Setting(this.containerEl)
+			.setName("Base file")
+			.setDesc("The base whose views are written. Nothing is written until one is named.")
+			.addSearch((search) => {
+				const save = async (value: string): Promise<void> => {
+					this.plugin.settings.memeBase.file = value;
+					await this.plugin.saveSettings();
+				};
+
+				search.inputEl.setAttribute("aria-label", "Base file");
+				search
+					.setPlaceholder("File in the vault")
+					.setValue(this.plugin.settings.memeBase.file)
+					.onChange((value) => {
+						void save(value);
+					});
+
+				new BaseSuggest(this.app, search.inputEl, (path) => {
+					void save(path);
+				});
+			});
+
+		new Setting(this.containerEl)
+			.setName("Tag of the memes")
+			.setDesc(
+				"The tag the memes sit under, written without a leading #. Every note of the " +
+					"vault carrying it takes part, wherever it lives, and the tags below " +
+					"it — a Memes/Funny under a Memes — are what the views are made of.",
+			)
+			.addSearch((search) => {
+				const save = async (value: string): Promise<void> => {
+					this.plugin.settings.memeBase.tag = value;
+					await this.plugin.saveSettings();
+				};
+
+				search.inputEl.setAttribute("aria-label", "Tag of the memes");
+				search
+					.setPlaceholder("Tag of the vault")
+					.setValue(this.plugin.settings.memeBase.tag)
+					.onChange((value) => {
+						void save(value);
+					});
+
+				new TopLevelTagSuggest(this.app, search.inputEl, (tag) => {
+					void save(tag);
+				});
+			});
 	}
 
 	/** What every rule shares: which notes it works on, and when. */

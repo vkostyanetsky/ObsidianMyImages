@@ -4,6 +4,8 @@ import type { ImageNote, NoteRule } from "./image-notes/rules";
 import { describeNoteOutcome, describeNotesRun, updateNote } from "./image-notes/rules";
 import { imageNoteOf, updateNotesInFolders } from "./image-notes/run";
 import { createRenameImagesRule } from "./images/rule";
+import { describeMemeBaseRun } from "./meme-base/base";
+import { rebuildMemeBase } from "./meme-base/run";
 import type { MyImagesSettings } from "./settings/settings";
 import { hasFolders, readSettings } from "./settings/settings";
 import { MyImagesSettingTab } from "./settings/tab";
@@ -43,6 +45,14 @@ export default class MyImagesPlugin extends Plugin {
 			name: "Update notes in image folders",
 			callback: () => {
 				void this.updateImageNotes();
+			},
+		});
+
+		this.addCommand({
+			id: "rebuild-meme-base",
+			name: "Rebuild the views of the base of the memes",
+			callback: () => {
+				void this.updateMemeBase();
 			},
 		});
 
@@ -129,5 +139,17 @@ export default class MyImagesPlugin extends Plugin {
 		}
 
 		new Notice(describeNotesRun(summary), SUMMARY_NOTICE_DURATION);
+	}
+
+	/**
+	 * Writes the views of the base of the memes anew, and says what came of it.
+	 * Unlike the notes of the image folders, the base is never written by
+	 * itself: the views follow the tags, and the tags change all day long.
+	 */
+	private async updateMemeBase(): Promise<void> {
+		new Notice(
+			describeMemeBaseRun(await rebuildMemeBase(this.app, this.settings.memeBase)),
+			SUMMARY_NOTICE_DURATION,
+		);
 	}
 }

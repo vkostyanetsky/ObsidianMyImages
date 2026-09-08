@@ -6,11 +6,12 @@ An Obsidian plugin that keeps the notes of my image folders in shape: naming the
 
 ## ✨ What it does
 
-One feature, two commands, and one run the plugin can make by itself once the vault is opened:
+Two features, three commands, and one run the plugin can make by itself once the vault is opened:
 
 | Feature | Commands |
 | --- | --- |
 | [Image notes](#-image-notes) | **Update current note**, **Update notes in image folders** |
+| [Base of the memes](#-base-of-the-memes) | **Rebuild the views of the base of the memes** |
 
 ## 🖼️ Image notes
 
@@ -113,6 +114,40 @@ date: 2017-04-06
 - Tweets from before November 2010 carry no timestamp in their ids — those were counted up one by one — and a link to one of them is left alone.
 - The property the date goes into is named in the settings; blank falls back to `date`.
 
+## 🗃️ Base of the memes
+
+My memes are tagged, one tag per thing a meme is good for — `Memes/Funny`, `Memes/Work`, `Memes/Anger` — and a base file shows them as a wall of cards. Browsing that wall by tag means a view per tag, and keeping a few dozen views in step with the tags by hand is not work worth doing twice.
+
+**Rebuild the views of the base of the memes** does it instead. Every note of the vault carrying the tag of the memes is counted, and the base comes out with one view per tag below it:
+
+```yaml
+  - type: cards
+    name: Funny
+    filters:
+      and:
+        - 'file.hasTag("Memes/Funny")'
+    order:
+      - file.name
+    sort:
+      - property: timestamp
+        direction: DESC
+    image: formula.preview
+    imageAspectRatio: 1
+    cardSize: 350
+```
+
+- **The header of the file is yours.** Its filters, its formulas and its properties are read and written back untouched — the folder the memes live in is filtered there, not in the views.
+- **The first view is yours as well, and it is the model the rest are cut from.** Whatever it says about the type of the view, the image it shows, the size of its cards and the order it sorts in is said by every generated view too; the only thing they add is a filter of their own. Everything after that first view is replaced on every run.
+- **A view is named after its tag**, the tag of the memes taken off the front: `Memes/Funny` becomes **Funny**, and a deeper `Memes/Funny/Cats` becomes **Funny/Cats**.
+- **The largest group comes first**, ties settled by name, so the tags worth browsing are the ones nearest to hand.
+- **A meme of several tags shows up under each of them.** The views are a way of browsing the memes, not a filing system: a meme about work one is also angry about is worth finding under both.
+- **The memes that carry the tag and nothing below it get a view of their own**, named after the tag itself and kept last. `hasTag` counts the tags below the one it is given, so that view filters them out by hand — it is the pile nobody has said anything about yet.
+- **The whole vault is counted, not one folder.** What is then shown is up to the filters of the base: a base that only looks at one folder shows the memes of that folder, whatever the tags of the rest of the vault say.
+- **Nothing is written unless the file would come out saying something else**, so a run that finds the views in order leaves the modification date of the base alone.
+- The file is read as YAML and written back as YAML, which normalizes the way it is laid out — the values are the ones you gave, the quoting and the line breaks are Obsidian's own.
+
+The base is never rebuilt by itself, not even when the vault is opened: tags change all day long, and a file rewritten behind one's back is a file one stops trusting.
+
 ## 🐞 Debugging output
 
 Everything the plugin does to the vault is written to the developer console (`Ctrl+Shift+I` → **Console**, filter by `[My Images]`): how many notes of the vault a run considered, every image rename, every image left alone because other notes use it — named one by one — every note that is written back, with the number of links rewritten in it, and every date taken from a tweet. Notes that could not be processed come out as warnings.
@@ -126,6 +161,8 @@ Everything the plugin does to the vault is written to the developer console (`Ct
 | **Rename images** | Whether the images of a note are named after the note at all. |
 | **Fill in the date of the tweet** | Whether the day a linked tweet was posted on is written into the note at all. |
 | **Date** | The property that day is written to. Blank falls back to `date`. |
+| **Base file** | The `.base` file whose views are written anew. Nothing is written until one is named. |
+| **Tag of the memes** | The tag the memes sit under, written without a leading `#`. The tags below it are what the views are made of. |
 
 Folders are matched without regard to case, and a folder holds everything below it, so `Projects` covers `Projects/2026/Trip.md` as well.
 
@@ -133,7 +170,9 @@ Folders are matched without regard to case, and a folder holds everything below 
 
 Open a note of an image folder, then run **Update current note** from the command palette (`Ctrl/Cmd+P`). To go through every note of those folders instead, run **Update notes in image folders**.
 
-Both work only when they are run. Nothing is renamed while a note is being edited, and no note is written unless something in it would change.
+To write the views of the base of the memes anew, run **Rebuild the views of the base of the memes**.
+
+All three work only when they are run. Nothing is renamed while a note is being edited, no note is written unless something in it would change, and the base is written only when its views would come out differently.
 
 ## 🔨 Building
 
@@ -217,6 +256,9 @@ Alternatively, to develop against a live vault without copying anything, clone t
 | [src/images/types.ts](src/images/types.ts) | Data types of the renaming |
 | [src/image-notes/rules.ts](src/image-notes/rules.ts) | What a rule is, and the run that applies the rules to a note |
 | [src/image-notes/run.ts](src/image-notes/run.ts) | Running over the notes of the image folders |
+| [src/meme-base/tags.ts](src/meme-base/tags.ts) | Sorting the notes of the vault into the groups the base shows |
+| [src/meme-base/base.ts](src/meme-base/base.ts) | Turning those groups into the views of the base file |
+| [src/meme-base/run.ts](src/meme-base/run.ts) | Reading the base of the memes and writing it back |
 | [src/tweets/tweets.ts](src/tweets/tweets.ts) | Reading the day a tweet was posted on out of its address |
 | [src/tweets/rule.ts](src/tweets/rule.ts) | The date of a tweet as a rule |
 | [src/editor/apply-edits.ts](src/editor/apply-edits.ts) | Applying edits to the Obsidian editor as one transaction |
@@ -224,6 +266,8 @@ Alternatively, to develop against a live vault without copying anything, clone t
 | [src/settings/settings.ts](src/settings/settings.ts) | The stored settings, and which notes the folders hold |
 | [src/settings/tab.ts](src/settings/tab.ts) | The settings tab in the Obsidian preferences |
 | [src/settings/folder-suggest.ts](src/settings/folder-suggest.ts) | Suggesting vault folders while one is typed |
+| [src/settings/base-suggest.ts](src/settings/base-suggest.ts) | Suggesting the bases of the vault while one is typed |
+| [src/settings/tag-suggest.ts](src/settings/tag-suggest.ts) | Suggesting the top-level tags of the vault while one is typed |
 | [src/log.ts](src/log.ts) | Debugging output |
 | [styles.css](styles.css) | The little styling the settings tab needs |
 | [scripts/deploy.mjs](scripts/deploy.mjs) | Copying the built plugin into a vault |

@@ -30,9 +30,21 @@ export interface ImageNotesSettings {
 	tweetDate: TweetDateSettings;
 }
 
+/**
+ * The base of the memes: the `.base` file whose views the plugin writes, and
+ * the tag the memes it shows sit under.
+ */
+export interface MemeBaseSettings {
+	/** Vault path of that file, its `.base` extension included. */
+	file: string;
+	/** The top-level tag of the memes, such as `Memes`. */
+	tag: string;
+}
+
 /** Everything the plugin remembers between sessions. */
 export interface MyImagesSettings {
 	imageNotes: ImageNotesSettings;
+	memeBase: MemeBaseSettings;
 }
 
 /** The property the date of a tweet is written to unless it is renamed. */
@@ -48,15 +60,23 @@ export const DEFAULT_SETTINGS: MyImagesSettings = {
 		renameImages: { enabled: true },
 		tweetDate: { enabled: false, property: DEFAULT_TWEET_DATE_PROPERTY },
 	},
+	// Nothing is guessed at here: a base of somebody else's making would be
+	// written over, so the file and the tag are named by hand or not at all.
+	memeBase: { file: "", tag: "" },
 };
 
 /**
- * Trims a folder as the user typed it down to a vault-relative path: outer
+ * Trims a path as the user typed it down to a vault-relative one: outer
  * whitespace, repeated separators and leading and trailing slashes are dropped.
  * The vault root, however it is written, comes back as an empty string.
  */
+export function normalizeVaultPath(path: string): string {
+	return path.trim().replace(/\/+/g, "/").replace(/^\/|\/$/g, "");
+}
+
+/** The same, for a path that names a folder. */
 export function normalizeFolder(folder: string): string {
-	return folder.trim().replace(/\/+/g, "/").replace(/^\/|\/$/g, "");
+	return normalizeVaultPath(folder);
 }
 
 /**
@@ -130,6 +150,7 @@ export function readSettings(data: unknown): MyImagesSettings {
 	const imageNotes = asRecord(stored.imageNotes);
 	const renameImages = asRecord(imageNotes.renameImages);
 	const tweetDate = asRecord(imageNotes.tweetDate);
+	const memeBase = asRecord(stored.memeBase);
 	const defaults = DEFAULT_SETTINGS.imageNotes;
 
 	return {
@@ -149,6 +170,10 @@ export function readSettings(data: unknown): MyImagesSettings {
 					DEFAULT_TWEET_DATE_PROPERTY,
 				),
 			},
+		},
+		memeBase: {
+			file: asString(memeBase.file, DEFAULT_SETTINGS.memeBase.file),
+			tag: asString(memeBase.tag, DEFAULT_SETTINGS.memeBase.tag),
 		},
 	};
 }
