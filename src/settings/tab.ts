@@ -49,7 +49,7 @@ export class MyImagesSettingTab extends PluginSettingTab {
 			this.autoUpdate(),
 			this.renameImages(),
 			this.tweetDate(),
-			this.memeBase(),
+			this.reactionBase(),
 		];
 	}
 
@@ -166,47 +166,37 @@ export class MyImagesSettingTab extends PluginSettingTab {
 		};
 	}
 
-	/** The meme base, and the tag the memes it shows sit under. */
-	private memeBase(): SettingDefinitionItem {
+	/** The reaction base, and the tag the reactions it shows sit under. */
+	private reactionBase(): SettingDefinitionItem {
 		return {
 			type: "group",
-			heading: "Meme base",
+			heading: "Reaction base",
 			items: [
 				{
 					name: "Base file",
 					desc:
-						"Writes the views of this base anew: one per tag below the tag of " +
-						"the memes, by name, and the two named below ahead of them. The " +
-						"header of the file is left as it is, and the view it opened with " +
-						"is the model every written view is cut from. Nothing is written " +
-						"until a base is named, and nothing is written by itself: run the " +
-						"command.",
+						"Writes the views of this base anew: one per tag below the reaction " +
+						"tag, by name, and the one named below ahead of them. The header of " +
+						"the file is left as it is, and the view it opened with is the model " +
+						"every written view is cut from. Nothing is written until a base is " +
+						"named, and nothing is written by itself: run the command.",
 					control: {
 						type: "file",
-						key: "memeBase.file",
+						key: "reactionBase.file",
 						placeholder: "File in the vault",
 						filter: (file) => file.extension === "base",
 					},
 				},
-				this.memeTag(),
+				this.reactionTag(),
 				{
-					name: "View of every meme",
+					name: "View of every reaction",
 					desc:
 						"Stands first in the base, and the base opens on it. It gathers " +
-						"every note carrying the meme tag, the tags below it " +
-						"counting as well. Blank leaves that view out.",
-					control: { type: "text", key: "memeBase.allView", placeholder: "Not written" },
-				},
-				{
-					name: "View of the memes without a tag of their own",
-					desc:
-						"Stands right after it, ahead of the tags. It gathers the memes " +
-						"that carry the meme tag and nothing below it, and sorts " +
-						"them by their tags — those of other trees being all such a meme " +
-						"carries. Blank leaves that view out.",
+						"every note carrying the reaction tag, the tags below it counting " +
+						"as well. Blank leaves that view out.",
 					control: {
 						type: "text",
-						key: "memeBase.topicView",
+						key: "reactionBase.allView",
 						placeholder: "Not written",
 					},
 				},
@@ -215,29 +205,30 @@ export class MyImagesSettingTab extends PluginSettingTab {
 	}
 
 	/**
-	 * The meme tag. This one row is built by hand: the tags of a vault
-	 * are none of the things a control of the preferences offers, and typing one
-	 * out without being offered the ones that are already in use is no fun.
+	 * The reaction tag. This one row is built by hand: the tags of a vault are
+	 * none of the things a control of the preferences offers, and typing one out
+	 * without being offered the ones already in use is no fun.
 	 */
-	private memeTag(): SettingGroupItem {
+	private reactionTag(): SettingGroupItem {
 		return {
-			name: "Meme tag",
+			name: "Reaction tag",
 			desc:
-				"The tag the memes sit under, written without a leading #. Every note of " +
-				"the vault carrying it takes part, wherever it lives, and the tags below " +
-				"it — a Memes/Funny under a Memes — are what the views are made of.",
+				"The tag the reactions sit under, written without a leading #. Every " +
+				"note of the vault carrying it takes part, wherever it lives, and the " +
+				"tags below it — a Reaction/Approve under a Reaction — are what the " +
+				"views are made of.",
 			render: (setting) => {
 				const save = async (value: string): Promise<void> => {
-					this.plugin.settings.memeBase.tag = value;
+					this.plugin.settings.reactionBase.tag = value;
 
 					await this.plugin.saveSettings();
 				};
 
 				setting.addSearch((search) => {
-					search.inputEl.setAttribute("aria-label", "Meme tag");
+					search.inputEl.setAttribute("aria-label", "Reaction tag");
 					search
 						.setPlaceholder("Tag of the vault")
-						.setValue(this.plugin.settings.memeBase.tag)
+						.setValue(this.plugin.settings.reactionBase.tag)
 						.onChange((value) => {
 							void save(value);
 						});
@@ -313,25 +304,18 @@ export class MyImagesSettingTab extends PluginSettingTab {
 						);
 					},
 				};
-			case "memeBase.file":
+			case "reactionBase.file":
 				return {
-					read: () => settings.memeBase.file,
+					read: () => settings.reactionBase.file,
 					write: (value) => {
-						settings.memeBase.file = asString(value);
+						settings.reactionBase.file = asString(value);
 					},
 				};
-			case "memeBase.allView":
+			case "reactionBase.allView":
 				return {
-					read: () => settings.memeBase.allView,
+					read: () => settings.reactionBase.allView,
 					write: (value) => {
-						settings.memeBase.allView = asString(value);
-					},
-				};
-			case "memeBase.topicView":
-				return {
-					read: () => settings.memeBase.topicView,
-					write: (value) => {
-						settings.memeBase.topicView = asString(value);
+						settings.reactionBase.allView = asString(value);
 					},
 				};
 			default:

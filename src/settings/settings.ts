@@ -31,28 +31,27 @@ export interface ImageNotesSettings {
 }
 
 /**
- * The meme base: the `.base` file whose views the plugin writes, and
- * the tag the memes it shows sit under.
+ * The reaction base: the `.base` file whose views the plugin writes, and the
+ * tag the reactions it shows sit under.
  */
-export interface MemeBaseSettings {
+export interface ReactionBaseSettings {
 	/** Vault path of that file, its `.base` extension included. */
 	file: string;
-	/** The top-level meme tag, such as `Memes`. */
+	/** The top-level tag of the reactions, such as `Reaction`. */
 	tag: string;
 	/**
-	 * The name of the view of every meme there is. Blank leaves that view out
-	 * of the base: the two views that are not one of the meme tags are the only
-	 * ones without a name of their own, and an unnamed one is not written.
+	 * The name of the view of every reaction there is. Blank leaves that view
+	 * out of the base: it is the one view that is not a tag of the reactions,
+	 * so it is the only one without a name of its own, and unnamed it is not
+	 * written.
 	 */
 	allView: string;
-	/** The name of the view of the memes that carry no tag below that one. */
-	topicView: string;
 }
 
 /** Everything the plugin remembers between sessions. */
 export interface MyImagesSettings {
 	imageNotes: ImageNotesSettings;
-	memeBase: MemeBaseSettings;
+	reactionBase: ReactionBaseSettings;
 }
 
 /** The property the date of a tweet is written to unless it is renamed. */
@@ -69,9 +68,9 @@ export const DEFAULT_SETTINGS: MyImagesSettings = {
 		tweetDate: { enabled: false, property: DEFAULT_TWEET_DATE_PROPERTY },
 	},
 	// Nothing is guessed at here: a base of somebody else's making would be
-	// written over, so the file, the tag and the views that are not tags of the
-	// memes are all named by hand or not at all.
-	memeBase: { file: "", tag: "", allView: "", topicView: "" },
+	// written over, so the file, the tag and the view that is not a tag of the
+	// reactions are all named by hand or not at all.
+	reactionBase: { file: "", tag: "", allView: "" },
 };
 
 /**
@@ -159,7 +158,7 @@ export function readSettings(data: unknown): MyImagesSettings {
 	const imageNotes = asRecord(stored.imageNotes);
 	const renameImages = asRecord(imageNotes.renameImages);
 	const tweetDate = asRecord(imageNotes.tweetDate);
-	const memeBase = asRecord(stored.memeBase);
+	const reactionBase = asRecord(stored.reactionBase);
 	const defaults = DEFAULT_SETTINGS.imageNotes;
 
 	return {
@@ -180,11 +179,10 @@ export function readSettings(data: unknown): MyImagesSettings {
 				),
 			},
 		},
-		memeBase: {
-			file: asString(memeBase.file, DEFAULT_SETTINGS.memeBase.file),
-			tag: asString(memeBase.tag, DEFAULT_SETTINGS.memeBase.tag),
-			allView: asString(memeBase.allView, DEFAULT_SETTINGS.memeBase.allView),
-			topicView: asString(memeBase.topicView, DEFAULT_SETTINGS.memeBase.topicView),
+		reactionBase: {
+			file: asString(reactionBase.file, DEFAULT_SETTINGS.reactionBase.file),
+			tag: asString(reactionBase.tag, DEFAULT_SETTINGS.reactionBase.tag),
+			allView: asString(reactionBase.allView, DEFAULT_SETTINGS.reactionBase.allView),
 		},
 	};
 }

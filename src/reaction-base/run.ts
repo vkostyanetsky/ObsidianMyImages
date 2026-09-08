@@ -1,11 +1,12 @@
 /*
- * Binding the meme base to the vault: which notes are counted, and how
- * the file is read and written.
+ * Binding the reaction base to the vault: which notes are counted, and how the
+ * file is read and written.
  *
  * The whole vault is gone through, note by note, and every note carrying the
- * meme tag takes part, wherever it happens to live. The filters of the
- * base itself decide what is then shown — a base that only looks at one folder
- * shows the memes of that folder — so the views are built from the tags alone.
+ * reaction tag takes part, wherever it happens to live. The filters of the base
+ * itself decide what is then shown — a base that only looks at a few folders
+ * shows the reactions of those folders — so the views are built from the tags
+ * alone.
  *
  * The run is always asked for, by the command and by nothing else.
  */
@@ -14,11 +15,11 @@ import type { App } from "obsidian";
 import { getAllTags, parseYaml, stringifyYaml } from "obsidian";
 
 import { log, logProblem } from "../log";
-import type { MemeBaseSettings } from "../settings/settings";
+import type { ReactionBaseSettings } from "../settings/settings";
 import { normalizeVaultPath } from "../settings/settings";
-import type { MemeBaseOutcome } from "./base";
-import { rebuildMemeBaseViews } from "./base";
-import { groupMemeTags, normalizeTag } from "./tags";
+import type { ReactionBaseOutcome } from "./base";
+import { rebuildReactionBaseViews } from "./base";
+import { groupReactionTags, normalizeTag } from "./tags";
 
 /** Whatever went wrong, said in a way a notice can carry. */
 function problemOf(error: unknown): string {
@@ -42,17 +43,17 @@ function tagsOfNotes(app: App): string[][] {
 }
 
 /**
- * Writes the views of the meme base anew: one view per tag below the
- * one the memes sit under, plus one for the memes that carry nothing below it.
+ * Writes the views of the reaction base anew: one per tag below the tag the
+ * reactions sit under, and the view of every reaction ahead of them.
  *
  * The file is only written when it would come out saying something other than
  * it does, so a run that finds the views already in order leaves the
  * modification date of the base alone.
  */
-export async function rebuildMemeBase(
+export async function rebuildReactionBase(
 	app: App,
-	settings: MemeBaseSettings,
-): Promise<MemeBaseOutcome> {
+	settings: ReactionBaseSettings,
+): Promise<ReactionBaseOutcome> {
 	const path = normalizeVaultPath(settings.file);
 	const tag = normalizeTag(settings.tag);
 
@@ -90,8 +91,8 @@ export async function rebuildMemeBase(
 		return { kind: "unreadable", path, problem: problemOf(error) };
 	}
 
-	const { groups, notes } = groupMemeTags(
-		{ tag, all: settings.allView, byTopic: settings.topicView },
+	const { groups, notes } = groupReactionTags(
+		{ tag, all: settings.allView },
 		tagsOfNotes(app),
 	);
 
@@ -105,7 +106,7 @@ export async function rebuildMemeBase(
 		return { kind: "no-groups", path, tag };
 	}
 
-	const rebuilt = rebuildMemeBaseViews(base, groups);
+	const rebuilt = rebuildReactionBaseViews(base, groups);
 
 	if (rebuilt.kind === "no-views") {
 		logProblem(`"${path}" has no view the generated ones could be cut from`);

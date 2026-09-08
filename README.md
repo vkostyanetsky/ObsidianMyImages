@@ -11,7 +11,7 @@ Two features, three commands, and one run the plugin can make by itself once the
 | Feature | Commands |
 | --- | --- |
 | [Image notes](#image-notes) | **Update current note**, **Update notes in image folders** |
-| [Meme base](#meme-base) | **Rebuild views of the meme base** |
+| [Reaction base](#reaction-base) | **Rebuild views of the reaction base** |
 
 <a id="image-notes"></a>
 
@@ -120,13 +120,13 @@ date: 2017-04-06
 - Tweets from before November 2010 carry no timestamp in their ids — those were counted up one by one — and a link to one of them is left alone.
 - The property the date goes into is named in the settings; blank falls back to `date`.
 
-<a id="meme-base"></a>
+<a id="reaction-base"></a>
 
-## 🗃️ Meme base
+## 🗃️ Reaction base
 
-My memes are tagged, one tag per thing a meme is good for — `Memes/Funny`, `Memes/Work`, `Memes/Anger` — and a base file shows them as a wall of cards. Browsing that wall by tag means a view per tag, and keeping a few dozen views in step with the tags by hand is not work worth doing twice.
+The pictures of my collections are tagged by the reaction they are good for — `Reaction/Approve`, `Reaction/Funny`, `Reaction/Anger` — and a base file shows them as a wall of cards. Browsing that wall by reaction means a view per reaction, and keeping a couple of dozen views in step with the tags by hand is not work worth doing twice.
 
-**Rebuild views of the meme base** does it instead. Every note of the vault carrying the meme tag is counted, and the base comes out with one view per tag below it:
+**Rebuild views of the reaction base** does it instead. Every note of the vault carrying the reaction tag is counted, and the base comes out with one view per tag below it:
 
 ```yaml
 views:
@@ -134,37 +134,31 @@ views:
     name: Everything          # the name given in the settings
     filters:
       and:
-        - 'file.hasTag("Memes")'
+        - 'file.hasTag("Reaction")'
     # …the look of the view the file opened with
   - type: cards
-    name: Without a tag       # the other name given there
+    name: Anger
     filters:
       and:
-        - 'file.hasTag("Memes")'
-        - not:
-            - 'file.hasTag("Memes/Funny", "Memes/Work", …)'
-    sort:
-      - property: tags
-        direction: ASC
-      # …and whatever the model sorts by, after that
-  - type: cards
-    name: Funny
-    filters:
-      and:
-        - 'file.hasTag("Memes/Funny")'
+        - 'file.hasTag("Reaction/Anger")'
     # …and the same look again
+  - type: cards
+    name: Approve
+    filters:
+      and:
+        - 'file.hasTag("Reaction/Approve")'
 ```
 
-- **The header of the file is yours.** Its filters, its formulas and its properties are read and written back untouched — the folder the memes live in is filtered there, not in the views.
+- **The header of the file is yours.** Its filters, its formulas and its properties are read and written back untouched — the folders the collections live in, and the reaction tag itself, are filtered there, not in the views.
 - **The first view of the file is the model every generated view is cut from.** Whatever it says about the type of the view, the image it shows, the size of its cards and the order it sorts in is said by every view of the rebuilt file too. Its name and its filter are not kept: those are the plugin's to write, and the row of views is replaced whole on every run — the first one included.
-- **The two views that are not one of the meme tags are named in the settings, and an unnamed one is not written at all.** They are the view of every meme there is and the view of the memes that carry no tag of their own; both stand ahead of the tags, in that order.
-- **The view of every meme** gathers the lot: `hasTag` counts the tags below the one it is given, so a single `file.hasTag("Memes")` does it. It stands first, so the base opens on the whole wall of them — the notes of the folder carrying no such tag at all stay out of it.
-- **A view is named after its tag**, the meme tag taken off the front: `Memes/Funny` becomes **Funny**, and a deeper `Memes/Funny/Cats` becomes **Funny/Cats**.
-- **A tag of two words run together is spelled out the way it is read**: `Memes/SoPleased` becomes **So pleased**. An abbreviation is left alone — `Memes/NSFW` stays **NSFW**, `Memes/3D` stays **3D** — and the tag the view filters by is the tag as written, whatever its view is called.
-- **The view of the memes without a tag of their own** asks for the meme tag and then turns down every tag below it in one call, so what is left is the pile nothing has been said about yet. Since the tags of other trees are all such a meme carries, that view sorts by tags before it sorts the way the model does. It is left out when there are no such memes, named or not.
-- **The views after those two are ordered by name**, from А to Я in Russian order whatever language Obsidian runs in, so that a row of three dozen views is a row one can find a name in.
-- **A meme of several tags shows up under each of them.** The views are a way of browsing the memes, not a filing system: a meme about work one is also angry about is worth finding under both.
-- **The whole vault is counted, not one folder.** What is then shown is up to the filters of the base: a base that only looks at one folder shows the memes of that folder, whatever the tags of the rest of the vault say.
+- **The one view that is not a reaction is named in the settings, and unnamed it is not written at all.** That is the view of every reaction there is, and it stands ahead of the rest.
+- **The view of every reaction** gathers the lot: `hasTag` counts the tags below the one it is given, so a single `file.hasTag("Reaction")` does it. It stands first, so the base opens on the whole wall of them.
+- **A view is named after its tag**, the reaction tag taken off the front: `Reaction/Approve` becomes **Approve**, and a deeper `Reaction/Approve/Loudly` becomes **Approve/Loudly**.
+- **A tag of two words run together is spelled out the way it is read**: `Reaction/SoPleased` becomes **So pleased**. An abbreviation is left alone — `Reaction/NSFW` stays **NSFW**, `Reaction/3D` stays **3D** — and the tag the view filters by is the tag as written, whatever its view is called.
+- **The views after the first are ordered by name**, from А to Я in Russian order whatever language Obsidian runs in, so that a row of two dozen views is a row one can find a name in.
+- **A note of several reactions shows up under each of them.** The views are a way of browsing the collections, not a filing system: a picture one answers a joke with and applauds with as well is worth finding under both.
+- **A note carrying the reaction tag and nothing below it** is counted among all of them and has no view of its own. There is nothing to call such a view, and nothing to tell one reaction from another in it.
+- **The whole vault is counted, not one folder.** What is then shown is up to the filters of the base: a base that only looks at a few folders shows the reactions of those folders, whatever the tags of the rest of the vault say.
 - **Nothing is written unless the file would come out saying something else**, so a run that finds the views in order leaves the modification date of the base alone.
 - The file is read as YAML and written back as YAML, which normalizes the way it is laid out — the values are the ones you gave, the quoting and the line breaks are Obsidian's own.
 
@@ -184,25 +178,24 @@ Everything the plugin does to the vault is written to the developer console (`Ct
 | **Fill in the date of the tweet** | Whether the day a linked tweet was posted on is written into the note at all. |
 | **Date** | The property that day is written to. Blank falls back to `date`. |
 | **Base file** | The `.base` file whose views are written anew. Nothing is written until one is named. |
-| **Meme tag** | The tag the memes sit under, written without a leading `#`. The tags below it are what the views are made of. |
-| **View of every meme** | The name of the view that gathers every meme there is and stands first in the base. Blank leaves it out. |
-| **View of the memes without a tag of their own** | The name of the view that gathers the memes carrying nothing below the meme tag. Blank leaves it out. |
+| **Reaction tag** | The tag the reactions sit under, written without a leading `#`. The tags below it are what the views are made of. |
+| **View of every reaction** | The name of the view that gathers every reaction there is and stands first in the base. Blank leaves it out. |
 
 Folders are matched without regard to case, and a folder holds everything below it, so `Projects` covers `Projects/2026/Trip.md` as well.
 
-The tab does not build itself: it says what it holds through `getSettingDefinitions()`, and Obsidian both lays the rows out and finds them by the search of the preferences. The one row built by hand is **Tag of the memes**, which offers the top-level tags already in use — something no control of the preferences does on its own.
+The tab does not build itself: it says what it holds through `getSettingDefinitions()`, and Obsidian both lays the rows out and finds them by the search of the preferences. The one row built by hand is **Reaction tag**, which offers the top-level tags already in use — something no control of the preferences does on its own.
 
 ## 🙂 Usage
 
 Open a note of an image folder, then run **Update current note** from the command palette (`Ctrl/Cmd+P`). To go through every note of those folders instead, run **Update notes in image folders**.
 
-To write the views of the meme base anew, run **Rebuild views of the meme base**.
+To write the views of the reaction base anew, run **Rebuild views of the reaction base**.
 
 All three work only when they are run. Nothing is renamed while a note is being edited, no note is written unless something in it would change, and the base is written only when its views would come out differently.
 
 ## 🔨 Building
 
-Requires Node.js 18 or newer. The plugin itself asks for Obsidian 1.13.0: the meme base is a Bases file, which came with 1.9.0, and the settings tab describes itself through `getSettingDefinitions()`, which came with 1.13.0.
+Requires Node.js 18 or newer. The plugin itself asks for Obsidian 1.13.0: the reaction base is a Bases file, which came with 1.9.0, and the settings tab describes itself through `getSettingDefinitions()`, which came with 1.13.0.
 
 ```bash
 npm install
@@ -290,9 +283,9 @@ Alternatively, to develop against a live vault without copying anything, clone t
 | [src/images/types.ts](src/images/types.ts) | Data types of the renaming |
 | [src/image-notes/rules.ts](src/image-notes/rules.ts) | What a rule is, and the run that applies the rules to a note |
 | [src/image-notes/run.ts](src/image-notes/run.ts) | Running over the notes of the image folders |
-| [src/meme-base/tags.ts](src/meme-base/tags.ts) | Sorting the notes of the vault into the groups the base shows |
-| [src/meme-base/base.ts](src/meme-base/base.ts) | Turning those groups into the views of the base file |
-| [src/meme-base/run.ts](src/meme-base/run.ts) | Reading the meme base and writing it back |
+| [src/reaction-base/tags.ts](src/reaction-base/tags.ts) | Sorting the notes of the vault into the groups the base shows |
+| [src/reaction-base/base.ts](src/reaction-base/base.ts) | Turning those groups into the views of the base file |
+| [src/reaction-base/run.ts](src/reaction-base/run.ts) | Reading the reaction base and writing it back |
 | [src/tweets/tweets.ts](src/tweets/tweets.ts) | Reading the day a tweet was posted on out of its address |
 | [src/tweets/rule.ts](src/tweets/rule.ts) | The date of a tweet as a rule |
 | [src/editor/apply-edits.ts](src/editor/apply-edits.ts) | Applying edits to the Obsidian editor as one transaction |

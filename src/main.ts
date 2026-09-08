@@ -4,8 +4,8 @@ import type { ImageNote, NoteRule } from "./image-notes/rules";
 import { describeNoteOutcome, describeNotesRun, updateNote } from "./image-notes/rules";
 import { imageNoteOf, updateNotesInFolders } from "./image-notes/run";
 import { createRenameImagesRule } from "./images/rule";
-import { describeMemeBaseRun } from "./meme-base/base";
-import { rebuildMemeBase } from "./meme-base/run";
+import { describeReactionBaseRun } from "./reaction-base/base";
+import { rebuildReactionBase } from "./reaction-base/run";
 import type { MyImagesSettings } from "./settings/settings";
 import { hasFolders, readSettings } from "./settings/settings";
 import { MyImagesSettingTab } from "./settings/tab";
@@ -49,10 +49,10 @@ export default class MyImagesPlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: "rebuild-meme-base",
-			name: "Rebuild views of the meme base",
+			id: "rebuild-reaction-base",
+			name: "Rebuild views of the reaction base",
 			callback: () => {
-				void this.updateMemeBase();
+				void this.updateReactionBase();
 			},
 		});
 
@@ -142,13 +142,15 @@ export default class MyImagesPlugin extends Plugin {
 	}
 
 	/**
-	 * Writes the views of the meme base anew, and says what came of it.
+	 * Writes the views of the reaction base anew, and says what came of it.
 	 * Unlike the notes of the image folders, the base is never written by
 	 * itself: the views follow the tags, and the tags change all day long.
 	 */
-	private async updateMemeBase(): Promise<void> {
+	private async updateReactionBase(): Promise<void> {
 		new Notice(
-			describeMemeBaseRun(await rebuildMemeBase(this.app, this.settings.memeBase)),
+			describeReactionBaseRun(
+				await rebuildReactionBase(this.app, this.settings.reactionBase),
+			),
 			SUMMARY_NOTICE_DURATION,
 		);
 	}

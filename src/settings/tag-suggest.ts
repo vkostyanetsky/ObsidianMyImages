@@ -3,8 +3,8 @@ import { AbstractInputSuggest, getAllTags } from "obsidian";
 
 /**
  * Offers the top-level tags of the vault while one is being typed: of
- * `Memes/Funny` only `Memes` is offered, that being the kind of tag the memes
- * are gathered under.
+ * `Reaction/Approve` only `Reaction` is offered, that being the kind of tag a
+ * collection is gathered under.
  *
  * The tags are gone through once, when the first suggestion is asked for, and
  * kept for as long as the settings tab is open. A tag added in the meantime is
