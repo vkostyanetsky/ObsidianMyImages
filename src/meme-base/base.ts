@@ -1,5 +1,5 @@
 /*
- * The base of the memes: a `.base` file whose views are written by the plugin,
+ * The meme base: a `.base` file whose views are written by the plugin,
  * one view per group of memes.
  *
  * The file is not written from nothing. Its own header — the filters, the
@@ -26,7 +26,7 @@ import type { MemeGroup } from "./tags";
  */
 const BY_TAGS = { property: "tags", direction: "ASC" };
 
-/** What became of a run over the base of the memes. */
+/** What became of a run over the meme base. */
 export type MemeBaseOutcome =
 	| { kind: "no-file" }
 	| { kind: "no-tag" }
@@ -86,8 +86,8 @@ export function filtersOfGroup(group: MemeGroup): Record<string, unknown> {
  * How one group is sorted: the way the model sorts, with the tags of a note
  * coming first for the group that asks for them.
  */
-function sortOfGroup(model: unknown, group: MemeGroup): unknown {
-	const sorted = Array.isArray(model) ? copy(model) : [];
+function sortOfGroup(model: unknown, group: MemeGroup): unknown[] {
+	const sorted: unknown[] = Array.isArray(model) ? copy<unknown[]>(model) : [];
 
 	return group.byTags ? [copy(BY_TAGS), ...sorted] : sorted;
 }
@@ -171,9 +171,9 @@ export function rebuildMemeBaseViews(
 export function describeMemeBaseRun(outcome: MemeBaseOutcome): string {
 	switch (outcome.kind) {
 		case "no-file":
-			return "No base of the memes is set. Name one in the settings of the plugin.";
+			return "No meme base is set. Name one in the settings of the plugin.";
 		case "no-tag":
-			return "No tag of the memes is set. Name one in the settings of the plugin.";
+			return "No meme tag is set. Name one in the settings of the plugin.";
 		case "no-base":
 			return `There is no "${outcome.path}" in the vault.`;
 		case "unreadable":
@@ -188,7 +188,7 @@ export function describeMemeBaseRun(outcome: MemeBaseOutcome): string {
 		case "no-groups":
 			return (
 				`There would be no view to write: no tag below "${outcome.tag}" is used, ` +
-				"and the two views that are not tags of the memes are unnamed. Name one " +
+				"and the two views that are not one of the meme tags are unnamed. Name one " +
 				"of them in the settings of the plugin."
 			);
 		case "written":

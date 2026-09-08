@@ -1,9 +1,9 @@
 /*
- * Binding the base of the memes to the vault: which notes are counted, and how
+ * Binding the meme base to the vault: which notes are counted, and how
  * the file is read and written.
  *
  * The whole vault is gone through, note by note, and every note carrying the
- * tag of the memes takes part, wherever it happens to live. The filters of the
+ * meme tag takes part, wherever it happens to live. The filters of the
  * base itself decide what is then shown — a base that only looks at one folder
  * shows the memes of that folder — so the views are built from the tags alone.
  *
@@ -42,7 +42,7 @@ function tagsOfNotes(app: App): string[][] {
 }
 
 /**
- * Writes the views of the base of the memes anew: one view per tag below the
+ * Writes the views of the meme base anew: one view per tag below the
  * one the memes sit under, plus one for the memes that carry nothing below it.
  *
  * The file is only written when it would come out saying something other than

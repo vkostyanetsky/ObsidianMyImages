@@ -426,8 +426,8 @@ describe("describeMemeBaseRun", () => {
 	const lineOf = (outcome: MemeBaseOutcome): string => describeMemeBaseRun(outcome);
 
 	it("asks for the settings that are missing", () => {
-		expect(lineOf({ kind: "no-file" })).toContain("No base of the memes is set");
-		expect(lineOf({ kind: "no-tag" })).toContain("No tag of the memes is set");
+		expect(lineOf({ kind: "no-file" })).toContain("No meme base is set");
+		expect(lineOf({ kind: "no-tag" })).toContain("No meme tag is set");
 	});
 
 	it("names the file it could not work with", () => {
@@ -467,11 +467,11 @@ describe("normalizeVaultPath", () => {
 });
 
 describe("readSettings", () => {
-	it("starts a fresh installation without a base of the memes", () => {
+	it("starts a fresh installation without a meme base", () => {
 		expect(readSettings(null).memeBase).toEqual(DEFAULT_SETTINGS.memeBase);
 	});
 
-	it("reads the base of the memes back as it was stored", () => {
+	it("reads the meme base back as it was stored", () => {
 		const stored = {
 			memeBase: {
 				file: "Memes.base",

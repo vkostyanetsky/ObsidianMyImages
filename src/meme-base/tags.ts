@@ -1,5 +1,5 @@
 /*
- * Sorting the notes of the vault into the groups a base of the memes shows.
+ * Sorting the notes of the vault into the groups a meme base shows.
  *
  * A meme carries a tag below one top-level tag — `Memes/Funny` under `Memes` —
  * and one group gathers the notes of one such tag. A note carrying several of

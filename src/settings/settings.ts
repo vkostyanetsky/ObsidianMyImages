@@ -31,17 +31,17 @@ export interface ImageNotesSettings {
 }
 
 /**
- * The base of the memes: the `.base` file whose views the plugin writes, and
+ * The meme base: the `.base` file whose views the plugin writes, and
  * the tag the memes it shows sit under.
  */
 export interface MemeBaseSettings {
 	/** Vault path of that file, its `.base` extension included. */
 	file: string;
-	/** The top-level tag of the memes, such as `Memes`. */
+	/** The top-level meme tag, such as `Memes`. */
 	tag: string;
 	/**
 	 * The name of the view of every meme there is. Blank leaves that view out
-	 * of the base: the two views that are not one tag of the memes are the only
+	 * of the base: the two views that are not one of the meme tags are the only
 	 * ones without a name of their own, and an unnamed one is not written.
 	 */
 	allView: string;

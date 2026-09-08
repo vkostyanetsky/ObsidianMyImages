@@ -50,7 +50,7 @@ export default class MyImagesPlugin extends Plugin {
 
 		this.addCommand({
 			id: "rebuild-meme-base",
-			name: "Rebuild the views of the base of the memes",
+			name: "Rebuild views of the meme base",
 			callback: () => {
 				void this.updateMemeBase();
 			},
@@ -142,7 +142,7 @@ export default class MyImagesPlugin extends Plugin {
 	}
 
 	/**
-	 * Writes the views of the base of the memes anew, and says what came of it.
+	 * Writes the views of the meme base anew, and says what came of it.
 	 * Unlike the notes of the image folders, the base is never written by
 	 * itself: the views follow the tags, and the tags change all day long.
 	 */
